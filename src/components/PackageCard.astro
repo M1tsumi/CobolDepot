@@ -1,0 +1,30 @@
+---
+import type { PackageRecord } from '../data/packages';
+
+const { pkg } = Astro.props as { pkg: PackageRecord };
+---
+<article class="p-5 rounded-2xl border border-base-200 bg-base-100 shadow-sm grid gap-3">
+  <header class="flex flex-wrap items-center gap-3">
+    <h3 class="text-xl font-semibold text-base-content">{pkg.name}</h3>
+    <span class="badge badge-outline badge-sm">v{pkg.version}</span>
+  </header>
+  <p class="text-base-content/80 text-sm">{pkg.description}</p>
+  <dl class="text-xs text-base-content/70 grid grid-cols-2 gap-2">
+    <div>
+      <dt class="uppercase tracking-wide">Author</dt>
+      <dd class="font-medium">{pkg.author}</dd>
+    </div>
+    <div>
+      <dt class="uppercase tracking-wide">Updated</dt>
+      <dd class="font-medium">{pkg.updatedAt}</dd>
+    </div>
+  </dl>
+  <div class="flex flex-wrap gap-2">
+    {pkg.keywords.map((keyword) => (
+      <span class="badge badge-ghost">{keyword}</span>
+    ))}
+  </div>
+  <a class="link link-primary text-sm" href={pkg.repository} rel="noreferrer" target="_blank">
+    View repository →
+  </a>
+</article>

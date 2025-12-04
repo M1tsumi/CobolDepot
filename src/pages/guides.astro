@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Guides · CobolDepot" description="Opinionated tutorials for COBOL modernization">
+  <section class="space-y-8">
+    <header class="space-y-3">
+      <p class="text-sm uppercase tracking-[0.2em] text-primary">Guides</p>
+      <h1 class="text-4xl font-bold">Blueprints for mainframe delivery teams</h1>
+      <p class="text-lg text-base-content/80 max-w-3xl">
+        Each guide focuses on end-to-end workflows—from migrating legacy copybooks to integrating CobolDepot search in
+        enterprise portals. Start with the quick wins below.
+      </p>
+    </header>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      <article class="rounded-2xl border border-base-200 bg-base-100 p-6 space-y-2">
+        <h2 class="text-2xl font-semibold">Modernize a legacy COBOL repo</h2>
+        <p class="text-sm text-base-content/70">
+          Break monolith libraries into versioned packages, wire CI to lint metadata, and deploy docs with Cloudflare
+          Pages.
+        </p>
+        <ol class="text-sm text-base-content/80 list-decimal list-inside space-y-1">
+          <li>Inventory copybooks and dependencies.</li>
+          <li>Create per-package manifests and semantic versions.</li>
+          <li>Publish to CobolDepot and embed docs links where the teams work.</li>
+        </ol>
+      </article>
+      <article class="rounded-2xl border border-base-200 bg-base-100 p-6 space-y-2">
+        <h2 class="text-2xl font-semibold">Add search to a portal</h2>
+        <p class="text-sm text-base-content/70">
+          Use the upcoming search API plus Algolia JS client to embed instant results in intranet portals.
+        </p>
+        <ol class="text-sm text-base-content/80 list-decimal list-inside space-y-1">
+          <li>Configure API keys in Cloudflare Pages environment variables.</li>
+          <li>Call the search endpoint with debounced inputs.</li>
+          <li>Render federated package + docs results with keyboard navigation.</li>
+        </ol>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

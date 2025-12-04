@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchPanel from '../components/SearchPanel.astro';
+import { packages } from '../data/packages';
+---
+<BaseLayout title="Search · CobolDepot" description="Find COBOL packages, docs, and guides instantly">
+  <section class="space-y-6">
+    <header class="space-y-3">
+      <p class="text-sm uppercase tracking-[0.2em] text-primary">Search</p>
+      <h1 class="text-4xl font-bold">Command palette for your COBOL ecosystem</h1>
+      <p class="text-lg text-base-content/80 max-w-3xl">
+        Use keyboard shortcuts, filters, and relevance signals to locate packages or documentation faster than scanning
+        wikis. This prototype mirrors the Algolia-powered experience planned for production.
+      </p>
+    </header>
+    <SearchPanel packages={packages} />
+  </section>
+</BaseLayout>

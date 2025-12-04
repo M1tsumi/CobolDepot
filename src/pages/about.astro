@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionGrid from '../components/SectionGrid.astro';
+import { siteSections } from '../data/siteSections';
+---
+<BaseLayout title="About · CobolDepot" description="Mission, maintainers, and roadmap for CobolDepot">
+  <section class="space-y-6">
+    <p class="text-sm uppercase tracking-[0.2em] text-primary">Mission</p>
+    <h1 class="text-4xl font-bold">Building a humane package workflow for COBOL teams</h1>
+    <p class="text-lg text-base-content/80 max-w-3xl">
+      CobolDepot keeps legacy systems healthy by modernizing how COBOL dependencies are shared, documented, and
+      searched. We blend static-first docs with curated package metadata so that mainframe engineers get the same
+      experience web developers expect—fast previews, reliable installations, and transparent governance.
+    </p>
+    <div class="grid gap-6 md:grid-cols-3">
+      <article class="p-5 rounded-2xl border border-base-200 bg-base-100">
+        <h2 class="text-xl font-semibold mb-2">Maintainers</h2>
+        <p class="text-sm text-base-content/70">
+          Led by the CobolDepot Core team. We coordinate via GitHub Projects and quarterly planning calls.
+        </p>
+      </article>
+      <article class="p-5 rounded-2xl border border-base-200 bg-base-100">
+        <h2 class="text-xl font-semibold mb-2">Roadmap</h2>
+        <ul class="text-sm list-disc list-inside text-base-content/80 space-y-1">
+          <li>Alpha: static docs + package catalog</li>
+          <li>Beta: authenticated publishing workflow</li>
+          <li>GA: verified maintainers + automated scans</li>
+        </ul>
+      </article>
+      <article class="p-5 rounded-2xl border border-base-200 bg-base-100">
+        <h2 class="text-xl font-semibold mb-2">Deployment</h2>
+        <p class="text-sm text-base-content/70">
+          Cloudflare Pages deploys on every merge to <code>main</code>, giving edge-cached docs and instant rollbacks.
+        </p>
+      </article>
+    </div>
+    <div class="space-y-3">
+      <h2 class="text-2xl font-semibold">Explore each area</h2>
+      <SectionGrid sections={siteSections} />
+    </div>
+  </section>
+</BaseLayout>

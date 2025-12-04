@@ -1,0 +1,359 @@
+---
+import type { PackageRecord } from '../data/packages';
+
+const { packages = [] } = Astro.props as { packages: PackageRecord[] };
+
+const fallbackDataId = `search-panel-data-${Math.random().toString(36).slice(2, 8)}`;
+const panelId = `search-panel-${Math.random().toString(36).slice(2, 8)}`;
+
+const algoliaConfig = {
+  appId: import.meta.env.PUBLIC_ALGOLIA_APP_ID ?? '',
+  searchKey: import.meta.env.PUBLIC_ALGOLIA_SEARCH_KEY ?? '',
+  indexName: import.meta.env.PUBLIC_ALGOLIA_INDEX_NAME ?? '',
+};
+
+const hasAlgolia = Object.values(algoliaConfig).every((value) => typeof value === 'string' && value.trim().length > 0);
+
+const serializedPackages = JSON.stringify(packages).replace(/</g, '\\u003c');
+---
+<section
+  id={panelId}
+  class="space-y-4"
+  data-search-root
+  data-fallback-id={fallbackDataId}
+  data-app-id={algoliaConfig.appId}
+  data-search-key={algoliaConfig.searchKey}
+  data-index-name={algoliaConfig.indexName}
+>
+  <div class="form-control">
+    <label class="input input-bordered flex items-center gap-2">
+      <span class="material-symbols-outlined text-base-content/60">search</span>
+      <input
+        data-search-input
+        name="q"
+        type="search"
+        placeholder="Search packages, docs, or guides"
+        class="grow"
+        aria-label="Search CobolDepot"
+        autocomplete="off"
+      />
+      <kbd class="kbd kbd-sm">/</kbd>
+    </label>
+  </div>
+  <div class="flex gap-3 flex-wrap">
+    <button class="btn btn-xs btn-outline" type="button" data-search-filter="popular" aria-pressed="false">Popular</button>
+    <button class="btn btn-xs btn-outline" type="button" data-search-filter="recent" aria-pressed="false">
+      Recently updated
+    </button>
+    <button class="btn btn-xs btn-outline" type="button" data-search-filter="license-mit" aria-pressed="false">
+      MIT License
+    </button>
+    <button class="btn btn-xs btn-outline" type="button" data-search-filter="license-apache" aria-pressed="false">
+      Apache License
+    </button>
+  </div>
+  <p class="text-xs text-base-content/70 flex items-center gap-2" data-search-status>
+    <span class="material-symbols-outlined text-base-content/50 text-sm">{hasAlgolia ? 'cloud_sync' : 'cloud_off'}</span>
+    {hasAlgolia ? 'Connected to Algolia Search' : 'Showing local demo results'}
+  </p>
+  <ul class="space-y-2" data-search-results>
+    {packages.map((pkg) => (
+      <li class="p-3 rounded-xl border border-base-200 bg-base-100">
+        <p class="font-semibold flex items-center gap-2">
+          {pkg.name}
+          <span class="badge badge-ghost badge-sm">{pkg.version}</span>
+        </p>
+        <p class="text-sm text-base-content/70">{pkg.description}</p>
+        <div class="flex gap-2 flex-wrap text-xs text-base-content/60 mt-2">
+          {pkg.keywords.map((keyword) => (
+            <span class="badge badge-outline">{keyword}</span>
+          ))}
+        </div>
+      </li>
+    ))}
+  </ul>
+</section>
+<script type="application/json" id={fallbackDataId}>
+  {serializedPackages}
+</script>
+<script type="module">
+  const panelId = '{panelId}';
+  const fallbackDataId = '{fallbackDataId}';
+
+  (() => {
+    const root = document.getElementById(panelId);
+    const fallbackNode = document.getElementById(fallbackDataId);
+    if (!root || !fallbackNode) {
+      return;
+    }
+
+    const input = root.querySelector('[data-search-input]');
+    const resultsList = root.querySelector('[data-search-results]');
+    const statusNode = root.querySelector('[data-search-status]');
+    const filterButtons = Array.from(root.querySelectorAll('[data-search-filter]'));
+
+    let fallbackRecords = [];
+    try {
+      const parsed = JSON.parse(fallbackNode.textContent || '[]');
+      fallbackRecords = Array.isArray(parsed)
+        ? parsed.map((record) => ({
+            ...record,
+            updatedTimestamp: Number.isNaN(Date.parse(record.updatedAt)) ? 0 : Date.parse(record.updatedAt),
+          }))
+        : [];
+    } catch (error) {
+      console.error('Unable to parse fallback search data', error);
+    }
+
+    const config = {
+      appId: root.dataset.appId,
+      searchKey: root.dataset.searchKey,
+      indexName: root.dataset.indexName,
+    };
+    const hasAlgolia = Boolean(config.appId && config.searchKey && config.indexName);
+
+    const ALGOLIA_ENDPOINT = hasAlgolia
+      ? `https://${config.appId}-dsn.algolia.net/1/indexes/${encodeURIComponent(config.indexName)}/query`
+      : null;
+
+    const RECENT_WINDOW_MS = 1000 * 60 * 60 * 24 * 120; // 120 days
+    const buildRecentThreshold = () => Date.now() - RECENT_WINDOW_MS;
+
+    const filterConfigs = {
+      popular: {
+        numericFilters: ['popularity>=80'],
+        localFilter: (records) =>
+          records
+            .filter((record) => typeof record.popularity === 'number' && record.popularity >= 80)
+            .sort((a, b) => b.popularity - a.popularity),
+      },
+      recent: {
+        numericFilters: () => [`updatedTimestamp>=${buildRecentThreshold()}`],
+        localFilter: (records) =>
+          records
+            .filter((record) => record.updatedTimestamp >= buildRecentThreshold())
+            .sort((a, b) => b.updatedTimestamp - a.updatedTimestamp),
+      },
+      'license-mit': {
+        facetFilters: [['license:MIT']],
+        localFilter: (records) =>
+          records.filter((record) => record.license?.toLowerCase() === 'mit'),
+      },
+      'license-apache': {
+        facetFilters: [['license:Apache-2.0']],
+        localFilter: (records) =>
+          records.filter((record) => record.license?.toLowerCase() === 'apache-2.0'),
+      },
+    };
+
+    let currentFilter = null;
+    let debounceTimer;
+    let abortController;
+
+    const setStatus = (message) => {
+      if (statusNode) {
+        statusNode.textContent = message;
+      }
+    };
+
+    const renderResults = (items) => {
+      if (!resultsList) {
+        return;
+      }
+      resultsList.innerHTML = '';
+
+      if (!items.length) {
+        const empty = document.createElement('li');
+        empty.className = 'p-3 rounded-xl border border-dashed border-base-200 bg-base-100 text-sm text-base-content/60';
+        empty.textContent = 'No results yet—try a different query or filter.';
+        resultsList.appendChild(empty);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      items.forEach((item) => {
+        const listItem = document.createElement('li');
+        listItem.className = 'p-3 rounded-xl border border-base-200 bg-base-100';
+
+        const title = document.createElement('p');
+        title.className = 'font-semibold flex items-center gap-2';
+        title.textContent = item.name || 'Untitled package';
+
+        if (item.version) {
+          const badge = document.createElement('span');
+          badge.className = 'badge badge-ghost badge-sm';
+          badge.textContent = item.version;
+          title.appendChild(badge);
+        }
+
+        const description = document.createElement('p');
+        description.className = 'text-sm text-base-content/70';
+        description.textContent = item.description || 'No description provided.';
+
+        const keywordRow = document.createElement('div');
+        keywordRow.className = 'flex gap-2 flex-wrap text-xs text-base-content/60 mt-2';
+
+        if (Array.isArray(item.keywords)) {
+          item.keywords.slice(0, 4).forEach((keyword) => {
+            const badge = document.createElement('span');
+            badge.className = 'badge badge-outline';
+            badge.textContent = keyword;
+            keywordRow.appendChild(badge);
+          });
+        }
+
+        if (item.repository) {
+          const link = document.createElement('a');
+          link.className = 'link link-primary text-sm';
+          link.href = item.repository;
+          link.target = '_blank';
+          link.rel = 'noreferrer';
+          link.textContent = 'View repository →';
+          keywordRow.appendChild(link);
+        }
+
+        listItem.appendChild(title);
+        listItem.appendChild(description);
+        listItem.appendChild(keywordRow);
+        fragment.appendChild(listItem);
+      });
+
+      resultsList.appendChild(fragment);
+    };
+
+    const applyLocalFilter = (records, filterId) => {
+      const config = filterConfigs[filterId];
+      if (!config || typeof config.localFilter !== 'function') {
+        return records;
+      }
+      return config.localFilter(records);
+    };
+
+    const normalizeQuery = (query) => query.trim().toLowerCase();
+
+    const searchLocal = (query, filterId) => {
+      const normalizedQuery = normalizeQuery(query);
+      let resultSet = fallbackRecords;
+
+      if (normalizedQuery) {
+        resultSet = fallbackRecords.filter((record) => {
+          const haystack = [record.name, record.description, record.author, (record.keywords || []).join(' ')
+            ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+          return haystack.includes(normalizedQuery);
+        });
+      }
+
+      resultSet = applyLocalFilter(resultSet, filterId);
+      return resultSet.slice(0, 10);
+    };
+
+    const searchAlgolia = async (query, filterId) => {
+      if (!hasAlgolia || !ALGOLIA_ENDPOINT) {
+        return [];
+      }
+
+      if (abortController) {
+        abortController.abort();
+      }
+      abortController = new AbortController();
+
+      const payload = {
+        query,
+        hitsPerPage: 10,
+      };
+
+      const filterConfig = filterConfigs[filterId];
+      if (filterConfig) {
+        if (filterConfig.numericFilters) {
+          payload.numericFilters = typeof filterConfig.numericFilters === 'function'
+            ? filterConfig.numericFilters()
+            : filterConfig.numericFilters;
+        }
+        if (filterConfig.facetFilters) {
+          payload.facetFilters = filterConfig.facetFilters;
+        }
+      }
+
+      const response = await fetch(ALGOLIA_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Algolia-Application-Id': config.appId,
+          'X-Algolia-API-Key': config.searchKey,
+        },
+        body: JSON.stringify(payload),
+        signal: abortController.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Algolia request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      return Array.isArray(data.hits) ? data.hits : [];
+    };
+
+    const executeSearch = async () => {
+      const query = input?.value ?? '';
+      setStatus(hasAlgolia ? 'Searching Algolia…' : 'Searching local data…');
+
+      try {
+        const hits = hasAlgolia ? await searchAlgolia(query, currentFilter) : searchLocal(query, currentFilter);
+        if (!hasAlgolia && hits.length === 0 && query.trim().length === 0) {
+          renderResults(fallbackRecords.slice(0, 5));
+        } else {
+          renderResults(hits);
+        }
+        setStatus(
+          `${hits.length} result${hits.length === 1 ? '' : 's'} • ${hasAlgolia ? 'Algolia Search' : 'Local demo'}`,
+        );
+      } catch (error) {
+        console.error('Search error', error);
+        const fallbackHits = searchLocal(input?.value ?? '', currentFilter);
+        renderResults(fallbackHits);
+        setStatus('Algolia unavailable—showing local results.');
+      }
+    };
+
+    const requestSearch = () => {
+      window.clearTimeout(debounceTimer);
+      debounceTimer = window.setTimeout(executeSearch, 180);
+    };
+
+    input?.addEventListener('input', requestSearch);
+    input?.form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      executeSearch();
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === '/' && !event.defaultPrevented && document.activeElement !== input) {
+        const targetTag = (event.target && event.target.tagName) || '';
+        if (!['INPUT', 'TEXTAREA'].includes(targetTag)) {
+          event.preventDefault();
+          input?.focus();
+        }
+      }
+    });
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const filterId = button.dataset.searchFilter;
+        currentFilter = currentFilter === filterId ? null : filterId;
+        filterButtons.forEach((btn) => {
+          const isActive = btn.dataset.searchFilter === currentFilter;
+          btn.classList.toggle('btn-primary', isActive);
+          btn.classList.toggle('btn-outline', !isActive);
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+        executeSearch();
+      });
+    });
+
+    // Initial render
+    renderResults(fallbackRecords.slice(0, 5));
+  })();
+</script>

@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Community · CobolDepot" description="Join the CobolDepot community and stay in sync">
+  <section class="space-y-8">
+    <header class="space-y-3">
+      <p class="text-sm uppercase tracking-[0.2em] text-primary">Community</p>
+      <h1 class="text-4xl font-bold">Stay connected with maintainers and fellow COBOL teams</h1>
+      <p class="text-lg text-base-content/80 max-w-3xl">
+        We run an open community with regular calls, asynchronous updates, and public RFCs. Pick any of the channels
+        below to sync with us.
+      </p>
+    </header>
+
+    <div class="grid gap-6 md:grid-cols-3">
+      <article class="p-5 rounded-2xl border border-base-200 bg-base-100">
+        <h2 class="text-xl font-semibold">Discord</h2>
+        <p class="text-sm text-base-content/70 mb-4">Live chat for release support and pair debugging.</p>
+        <a class="btn btn-primary btn-sm" href="https://discord.gg/example" target="_blank" rel="noreferrer">
+          Join Discord
+        </a>
+      </article>
+      <article class="p-5 rounded-2xl border border-base-200 bg-base-100">
+        <h2 class="text-xl font-semibold">Mailing List</h2>
+        <p class="text-sm text-base-content/70 mb-4">Monthly digest of roadmap updates and package highlights.</p>
+        <a class="btn btn-outline btn-sm" href="https://example.com/newsletter" target="_blank" rel="noreferrer">
+          Subscribe
+        </a>
+      </article>
+      <article class="p-5 rounded-2xl border border-base-200 bg-base-100">
+        <h2 class="text-xl font-semibold">Office Hours</h2>
+        <p class="text-sm text-base-content/70 mb-4">
+          Bi-weekly video call for publishers seeking feedback on new packages.
+        </p>
+        <a class="btn btn-outline btn-sm" href="https://cal.com/coboldepot" target="_blank" rel="noreferrer">
+          Reserve a slot
+        </a>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

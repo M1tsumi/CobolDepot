@@ -1,0 +1,12 @@
+name: job-scheduler-bridge
+version: 2.1.4
+description: Opinionated job scheduling bridge between COBOL batch jobs and cloud queues.
+author: ops-barn
+repository: https://github.com/ops-barn/job-scheduler-bridge
+keywords:
+  - scheduler
+  - ops
+  - integration
+license: MIT
+updatedAt: 2025-01-18
+popularity: 92

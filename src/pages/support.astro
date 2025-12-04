@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Support · CobolDepot" description="Get help, report incidents, and reach the team">
+  <section class="space-y-8">
+    <header class="space-y-3">
+      <p class="text-sm uppercase tracking-[0.2em] text-primary">Support</p>
+      <h1 class="text-4xl font-bold">We keep deployments stable so you can ship COBOL safely</h1>
+      <p class="text-lg text-base-content/80 max-w-3xl">
+        CobolDepot publishes incident reports, tracks SLAs, and offers direct maintainer access for enterprise teams.
+        Choose the channel that matches your urgency.
+      </p>
+    </header>
+
+    <div class="grid gap-6 md:grid-cols-3">
+      <article class="rounded-2xl border border-base-200 bg-base-100 p-5 space-y-2">
+        <h2 class="text-2xl font-semibold">General inquiries</h2>
+        <p class="text-sm text-base-content/70">Response within 2 business days.</p>
+        <a class="btn btn-outline btn-sm" href="mailto:support@coboldepot.dev">Email support</a>
+      </article>
+      <article class="rounded-2xl border border-base-200 bg-base-100 p-5 space-y-2">
+        <h2 class="text-2xl font-semibold">Incident response</h2>
+        <p class="text-sm text-base-content/70">24/7 paging for Tier-1 subscribers.</p>
+        <a class="btn btn-primary btn-sm" href="https://status.coboldepot.dev" target="_blank" rel="noreferrer">
+          View status page
+        </a>
+      </article>
+      <article class="rounded-2xl border border-base-200 bg-base-100 p-5 space-y-2">
+        <h2 class="text-2xl font-semibold">Office hours</h2>
+        <p class="text-sm text-base-content/70">Book a 30-minute session with the maintainers.</p>
+        <a class="btn btn-outline btn-sm" href="https://cal.com/coboldepot" target="_blank" rel="noreferrer">
+          Schedule time
+        </a>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

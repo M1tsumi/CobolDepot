@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/HeroSection.astro';
+import SectionGrid from '../components/SectionGrid.astro';
+import SearchPanel from '../components/SearchPanel.astro';
+import { siteSections } from '../data/siteSections';
+import { packages } from '../data/packages';
+
+const featuredPackages = packages.slice(0, 3);
+---
+<BaseLayout title="CobolDepot" description="Cloudflare-ready COBOL package discovery">
+  <div class="space-y-16">
+    <HeroSection featuredPackages={featuredPackages} />
+
+    <section class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+      <div class="space-y-6">
+        <h2 class="text-2xl font-semibold">Site Sections</h2>
+        <SectionGrid sections={siteSections} />
+      </div>
+      <div class="space-y-6">
+        <h2 class="text-2xl font-semibold flex items-center gap-2">
+          Search Snapshot
+          <span class="badge badge-outline">Alpha</span>
+        </h2>
+        <SearchPanel packages={featuredPackages} />
+      </div>
+    </section>
+  </div>
+</BaseLayout>

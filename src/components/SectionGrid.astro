@@ -1,0 +1,19 @@
+---
+import type { SiteSection } from '../data/siteSections';
+
+const { sections } = Astro.props as { sections: SiteSection[] };
+---
+<section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  {sections.map((section) => (
+    <article class="p-6 rounded-2xl border border-base-200 bg-base-100 shadow-sm">
+      <header class="flex items-center justify-between gap-3 mb-3">
+        <h3 class="text-lg font-semibold text-base-content">{section.name}</h3>
+        <span class="badge badge-outline badge-sm">{section.name.charAt(0)}</span>
+      </header>
+      <p class="text-sm text-base-content/80 mb-4">{section.description}</p>
+      <a class="link link-primary font-medium" href={section.href}>
+        Explore {section.name}
+      </a>
+    </article>
+  ))}
+</section>

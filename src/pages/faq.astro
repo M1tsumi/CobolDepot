@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="FAQ · CobolDepot" description="Answers to common CobolDepot questions">
+  <section class="space-y-6">
+    <h1 class="text-4xl font-bold">Frequently Asked Questions</h1>
+    <ul class="space-y-4">
+      <li class="rounded-2xl border border-base-200 bg-base-100 p-5">
+        <h2 class="text-xl font-semibold">How do deployments work?</h2>
+        <p class="text-base-content/80">
+          Every push to <code>main</code> triggers Cloudflare Pages to run <code>npm run build</code> and publish the
+          static <code>dist/</code> output. Pull requests receive preview URLs.
+        </p>
+      </li>
+      <li class="rounded-2xl border border-base-200 bg-base-100 p-5">
+        <h2 class="text-xl font-semibold">What file formats are supported?</h2>
+        <p class="text-base-content/80">
+          Package metadata is YAML-first. Docs live in Markdown/MDX, transformed via Astro during builds.
+        </p>
+      </li>
+      <li class="rounded-2xl border border-base-200 bg-base-100 p-5">
+        <h2 class="text-xl font-semibold">Can I self-host instead of Cloudflare Pages?</h2>
+        <p class="text-base-content/80">
+          Yes—Astro emits static assets. You can deploy them to any CDN or object storage bucket if Cloudflare is not
+          available, though Pages remains the recommended path.
+        </p>
+      </li>
+    </ul>
+  </section>
+</BaseLayout>

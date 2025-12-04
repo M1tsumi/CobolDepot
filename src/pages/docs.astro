@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Docs · CobolDepot" description="Install the CLI, publish packages, integrate search">
+  <section class="space-y-8">
+    <header class="space-y-3">
+      <p class="text-sm uppercase tracking-[0.2em] text-primary">Documentation</p>
+      <h1 class="text-4xl font-bold">Ship reliable COBOL packages with confidence</h1>
+      <p class="text-lg text-base-content/80 max-w-3xl">
+        The docs site is fully static and deploys with every push to <code>main</code>. Use it to onboard your team,
+        publish new packages, and embed CobolDepot search anywhere in your stack.
+      </p>
+    </header>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      <article class="rounded-2xl border border-base-200 bg-base-100 p-6 space-y-3">
+        <h2 class="text-2xl font-semibold">Install the CLI</h2>
+        <ol class="list-decimal list-inside text-base-content/80 space-y-2">
+          <li>Download the latest binary from <code>releases/</code>.</li>
+          <li>Run <code>coboldepot init</code> inside your COBOL repo.</li>
+          <li>Commit the generated <code>coboldepot.yaml</code> manifest.</li>
+        </ol>
+      </article>
+      <article class="rounded-2xl border border-base-200 bg-base-100 p-6 space-y-3">
+        <h2 class="text-2xl font-semibold">Publish a package</h2>
+        <ol class="list-decimal list-inside text-base-content/80 space-y-2">
+          <li>Fill out the metadata template from <code>plan.md</code>.</li>
+          <li>Run <code>coboldepot publish</code> to validate + upload.</li>
+          <li>Open a PR linking to the generated package entry.</li>
+        </ol>
+      </article>
+    </div>
+
+    <article class="rounded-2xl border border-primary/30 bg-base-100 p-6">
+      <h2 class="text-2xl font-semibold mb-3">Cloudflare deployment commands</h2>
+      <pre class="bg-base-200 rounded-xl p-4 text-sm overflow-x-auto">
+        <code>
+# Development
+npm run dev
+
+# Production build (Cloudflare Pages)
+npm run build
+        </code>
+      </pre>
+      <p class="text-sm text-base-content/70">
+        Cloudflare Pages reads <code>astro.config.mjs</code>, runs <code>npm run build</code>, and serves the static
+        <code>dist/</code> output at the edge.
+      </p>
+    </article>
+  </section>
+</BaseLayout>

@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Blog · CobolDepot" description="Release notes and COBOL community highlights">
+  <section class="space-y-6">
+    <p class="text-sm uppercase tracking-[0.2em] text-primary">Release Notes</p>
+    <h1 class="text-4xl font-bold">Stories from the COBOL ecosystem</h1>
+    <p class="text-base-content/80 text-lg max-w-3xl">
+      Follow along as we build CobolDepot in public. We cover weekly release notes, deep dives on package governance,
+      and spotlights on mainframe teams modernizing their workflows.
+    </p>
+    <div class="grid gap-6 md:grid-cols-2">
+      <article class="p-5 rounded-2xl border border-base-200 bg-base-100">
+        <p class="text-xs tracking-wide uppercase text-base-content/60">Coming Soon</p>
+        <h2 class="text-2xl font-semibold">Alpha launch recap</h2>
+        <p class="text-sm text-base-content/70">
+          Learn how we wired Astro, Tailwind, and Cloudflare Pages together for a globally cached docs experience.
+        </p>
+      </article>
+      <article class="p-5 rounded-2xl border border-base-200 bg-base-100">
+        <p class="text-xs tracking-wide uppercase text-base-content/60">Coming Soon</p>
+        <h2 class="text-2xl font-semibold">Publishing your first package</h2>
+        <p class="text-sm text-base-content/70">
+          Walkthrough of the CobolDepot package metadata contract with lint helpers and CI recommendations.
+        </p>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

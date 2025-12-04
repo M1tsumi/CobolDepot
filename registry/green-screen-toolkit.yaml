@@ -1,0 +1,12 @@
+name: green-screen-toolkit
+version: 0.3.2
+description: UI toolkit for building modern green-screen workflows with COBOL backends.
+author: mainframe-maven
+repository: https://github.com/mainframe-maven/green-screen-toolkit
+keywords:
+  - ui
+  - mainframe
+  - toolkit
+license: Apache-2.0
+updatedAt: 2025-02-10
+popularity: 74

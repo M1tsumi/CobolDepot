@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PackageCard from '../components/PackageCard.astro';
+import { packages } from '../data/packages';
+---
+<BaseLayout title="Packages · CobolDepot" description="Browse curated COBOL packages">
+  <section class="space-y-8">
+    <header class="space-y-3">
+      <p class="text-sm uppercase tracking-[0.2em] text-primary">Packages Index</p>
+      <h1 class="text-4xl font-bold">Alphabetized COBOL package directory</h1>
+      <p class="text-lg text-base-content/80 max-w-3xl">
+        Every package entry ships with metadata ready for search and documentation. Submit a pull request with a YAML
+        manifest to have your library featured.
+      </p>
+    </header>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {packages.map((pkg) => (
+        <PackageCard pkg={pkg} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

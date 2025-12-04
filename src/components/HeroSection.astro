@@ -1,0 +1,50 @@
+---
+import type { PackageRecord } from '../data/packages';
+
+const { featuredPackages = [] } = Astro.props as { featuredPackages: PackageRecord[] };
+const packageCount = featuredPackages.length;
+---
+<section class="flex flex-col gap-8 lg:flex-row lg:items-center">
+  <div class="flex-1 space-y-6">
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+      Cloudflare-ready · Mainframe-friendly
+    </p>
+    <h1 class="text-4xl sm:text-5xl font-black leading-tight text-base-content">
+      CobolDepot keeps your COBOL packages discoverable, documented, and searchable.
+    </h1>
+    <p class="text-lg text-base-content/80 max-w-2xl">
+      Ship modern developer experiences for mainframe teams with an optimized static site deployed on Cloudflare
+      Pages. Browse curated packages, deep documentation, and fast global search without touching infrastructure.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <a class="btn btn-primary btn-lg" href="/docs">Quickstart Guide</a>
+      <a class="btn btn-outline btn-lg" href="/packages">Explore Packages</a>
+    </div>
+    <dl class="grid grid-cols-2 gap-6 max-w-xl">
+      <div>
+        <dt class="text-sm text-base-content/70">Seed Packages</dt>
+        <dd class="text-3xl font-bold">{packageCount}+</dd>
+      </div>
+      <div>
+        <dt class="text-sm text-base-content/70">Global Edge Deployments</dt>
+        <dd class="text-3xl font-bold">1-click</dd>
+      </div>
+    </dl>
+  </div>
+  <div class="flex-1">
+    <div class="rounded-3xl border border-primary/30 bg-base-100 shadow-2xl p-6">
+      <p class="text-sm font-semibold text-primary mb-4">Featured</p>
+      <ul class="space-y-4">
+        {featuredPackages.map((pkg) => (
+          <li class="p-4 rounded-2xl bg-base-200/60 border border-base-200">
+            <p class="flex items-center gap-2 text-lg font-semibold">
+              <span class="text-primary">{pkg.name}</span>
+              <span class="badge badge-sm badge-outline">{pkg.version}</span>
+            </p>
+            <p class="text-sm text-base-content/70">{pkg.description}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
