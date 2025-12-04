@@ -4,15 +4,49 @@
 
 :root {
   color-scheme: light;
+  --surface: rgba(255, 255, 255, 0.9);
+  --surface-border: rgba(255, 255, 255, 0.45);
+  --surface-shadow: 0 20px 60px rgba(35, 58, 136, 0.15);
 }
 
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background-color: #f7f9fc;
+  background: radial-gradient(circle at top, #e1edff 0, #f7f9fc 40%, #eef2ff 100%);
   color: #030712;
   min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(45, 125, 210, 0.12) 1px, transparent 0);
+  background-size: 60px 60px;
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: -1;
 }
 
 a {
   color: inherit;
+}
+
+.glass-panel {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 1.75rem;
+  box-shadow: var(--surface-shadow);
+  backdrop-filter: blur(18px);
+}
+
+.glow-ring {
+  position: absolute;
+  inset: auto;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(45, 125, 210, 0.35), transparent 60%);
+  filter: blur(10px);
+  opacity: 0.6;
 }

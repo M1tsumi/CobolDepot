@@ -4,47 +4,69 @@ import type { PackageRecord } from '../data/packages';
 const { featuredPackages = [] } = Astro.props as { featuredPackages: PackageRecord[] };
 const packageCount = featuredPackages.length;
 ---
-<section class="flex flex-col gap-8 lg:flex-row lg:items-center">
-  <div class="flex-1 space-y-6">
-    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+<section class="relative grid gap-10 lg:grid-cols-[1.15fr_0.85fr] items-center">
+  <div class="space-y-6">
+    <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+      <span class="material-symbols-outlined text-base">radar</span>
       Cloudflare-ready · Mainframe-friendly
-    </p>
+    </span>
     <h1 class="text-4xl sm:text-5xl font-black leading-tight text-base-content">
       CobolDepot keeps your COBOL packages discoverable, documented, and searchable.
     </h1>
     <p class="text-lg text-base-content/80 max-w-2xl">
-      Ship modern developer experiences for mainframe teams with an optimized static site deployed on Cloudflare
-      Pages. Browse curated packages, deep documentation, and fast global search without touching infrastructure.
+      Ship modern developer experiences for mainframe teams with an optimized static site deployed on Cloudflare Pages.
+      Browse curated metadata, deep documentation, and fast global search without touching infrastructure.
     </p>
     <div class="flex flex-wrap gap-4">
-      <a class="btn btn-primary btn-lg" href="/docs">Quickstart Guide</a>
-      <a class="btn btn-outline btn-lg" href="/packages">Explore Packages</a>
+      <a class="btn btn-primary btn-lg shadow-lg shadow-primary/30" href="/docs">Launch Quickstart</a>
+      <a class="btn btn-outline btn-lg" href="/packages">Explore Registry</a>
+      <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-base-content/60">
+        <span class="material-symbols-outlined text-sm text-success">verified</span>
+        Beta access is open
+      </span>
     </div>
-    <dl class="grid grid-cols-2 gap-6 max-w-xl">
-      <div>
-        <dt class="text-sm text-base-content/70">Seed Packages</dt>
+    <dl class="grid gap-6 sm:grid-cols-3">
+      <div class="glass-panel p-4">
+        <dt class="text-xs uppercase tracking-wide text-base-content/60">Seed Packages</dt>
         <dd class="text-3xl font-bold">{packageCount}+</dd>
       </div>
-      <div>
-        <dt class="text-sm text-base-content/70">Global Edge Deployments</dt>
+      <div class="glass-panel p-4">
+        <dt class="text-xs uppercase tracking-wide text-base-content/60">Edge Deployments</dt>
         <dd class="text-3xl font-bold">1-click</dd>
+      </div>
+      <div class="glass-panel p-4">
+        <dt class="text-xs uppercase tracking-wide text-base-content/60">Search SLA</dt>
+        <dd class="text-3xl font-bold">99.9%</dd>
       </div>
     </dl>
   </div>
-  <div class="flex-1">
-    <div class="rounded-3xl border border-primary/30 bg-base-100 shadow-2xl p-6">
-      <p class="text-sm font-semibold text-primary mb-4">Featured</p>
-      <ul class="space-y-4">
-        {featuredPackages.map((pkg) => (
-          <li class="p-4 rounded-2xl bg-base-200/60 border border-base-200">
-            <p class="flex items-center gap-2 text-lg font-semibold">
-              <span class="text-primary">{pkg.name}</span>
-              <span class="badge badge-sm badge-outline">{pkg.version}</span>
-            </p>
-            <p class="text-sm text-base-content/70">{pkg.description}</p>
-          </li>
-        ))}
-      </ul>
+
+  <div class="glass-panel p-6 lg:p-8 relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none rounded-[1.5rem] border border-white/40 opacity-60"></div>
+    <div class="flex items-center justify-between mb-6 relative">
+      <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-base-content/60">Featured packages</p>
+        <p class="text-2xl font-semibold">Curated for modernization</p>
+      </div>
+      <span class="badge badge-outline">Live</span>
     </div>
+    <ul class="space-y-4 relative">
+      {featuredPackages.map((pkg) => (
+        <li class="rounded-2xl border border-base-200/70 bg-base-100/90 p-4 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="flex-1">
+              <p class="font-semibold text-base-content flex items-center gap-2">
+                {pkg.name}
+                <span class="badge badge-ghost badge-sm">v{pkg.version}</span>
+              </p>
+              <p class="text-sm text-base-content/70">{pkg.description}</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" href={pkg.repository} target="_blank" rel="noreferrer">
+              Repo
+            </a>
+          </div>
+        </li>
+      ))}
+    </ul>
   </div>
 </section>

@@ -52,6 +52,9 @@ const serializedPackages = JSON.stringify(packages).replace(/</g, '\\u003c');
       Apache License
     </button>
   </div>
+  <div class="hidden items-center gap-2 text-xs text-base-content/70" data-filter-crumb>
+    <span class="font-semibold uppercase tracking-[0.2em] text-base-content/50">Filter</span>
+  </div>
   <p class="text-xs text-base-content/70 flex items-center gap-2" data-search-status>
     <span class="material-symbols-outlined text-base-content/50 text-sm">{hasAlgolia ? 'cloud_sync' : 'cloud_off'}</span>
     {hasAlgolia ? 'Connected to Algolia Search' : 'Showing local demo results'}
@@ -90,6 +93,7 @@ const serializedPackages = JSON.stringify(packages).replace(/</g, '\\u003c');
     const input = root.querySelector('[data-search-input]');
     const resultsList = root.querySelector('[data-search-results]');
     const statusNode = root.querySelector('[data-search-status]');
+    const filterCrumb = root.querySelector('[data-filter-crumb]');
     const filterButtons = Array.from(root.querySelectorAll('[data-search-filter]'));
 
     let fallbackRecords = [];
@@ -146,13 +150,71 @@ const serializedPackages = JSON.stringify(packages).replace(/</g, '\\u003c');
       },
     };
 
+    const filterLabels = {
+      popular: 'Popular',
+      recent: 'Recently updated',
+      'license-mit': 'MIT License',
+      'license-apache': 'Apache License',
+    };
+
     let currentFilter = null;
     let debounceTimer;
     let abortController;
 
+    const storage = (() => {
+      try {
+        return window.sessionStorage;
+      } catch (error) {
+        console.warn('Session storage unavailable', error);
+        return null;
+      }
+    })();
+
+    const CACHE_KEY = 'coboldepot-search-cache';
+    const CACHE_TTL = 1000 * 60 * 10; // 10 minutes
+
     const setStatus = (message) => {
       if (statusNode) {
         statusNode.textContent = message;
+      }
+    };
+
+    const renderFilterCrumb = () => {
+      if (!filterCrumb) {
+        return;
+      }
+
+      if (!currentFilter) {
+        filterCrumb.classList.add('hidden');
+        filterCrumb.replaceChildren();
+        return;
+      }
+
+      const label = filterLabels[currentFilter] ?? currentFilter;
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'px-3 py-1 rounded-full border border-base-300 bg-base-100 flex items-center gap-2';
+      chip.textContent = label;
+
+      const icon = document.createElement('span');
+      icon.className = 'material-symbols-outlined text-sm';
+      icon.textContent = 'close';
+      chip.appendChild(icon);
+
+      chip.addEventListener('click', () => {
+        currentFilter = null;
+        updateFilterButtons();
+        renderFilterCrumb();
+        executeSearch();
+      });
+
+      filterCrumb.classList.remove('hidden');
+      filterCrumb.replaceChildren(filterCrumb.firstElementChild ?? document.createElement('span'), chip);
+      if (!filterCrumb.firstElementChild || filterCrumb.firstElementChild === chip) {
+        const prefix = document.createElement('span');
+        prefix.className = 'font-semibold uppercase tracking-[0.2em] text-base-content/50';
+        prefix.textContent = 'Filter';
+        filterCrumb.insertBefore(prefix, chip);
       }
     };
 
@@ -296,20 +358,38 @@ const serializedPackages = JSON.stringify(packages).replace(/</g, '\\u003c');
       return Array.isArray(data.hits) ? data.hits : [];
     };
 
-    const executeSearch = async () => {
+    const executeSearch = async (options = { useCacheOnly: false }) => {
       const query = input?.value ?? '';
       setStatus(hasAlgolia ? 'Searching Algolia…' : 'Searching local data…');
 
       try {
-        const hits = hasAlgolia ? await searchAlgolia(query, currentFilter) : searchLocal(query, currentFilter);
+        const hits = options.useCacheOnly
+          ? searchLocal(query, currentFilter)
+          : hasAlgolia
+            ? await searchAlgolia(query, currentFilter)
+            : searchLocal(query, currentFilter);
         if (!hasAlgolia && hits.length === 0 && query.trim().length === 0) {
           renderResults(fallbackRecords.slice(0, 5));
         } else {
           renderResults(hits);
         }
-        setStatus(
-          `${hits.length} result${hits.length === 1 ? '' : 's'} • ${hasAlgolia ? 'Algolia Search' : 'Local demo'}`,
-        );
+        const sourceLabel = hasAlgolia ? 'Algolia Search' : options.useCacheOnly ? 'Cached local results' : 'Local demo';
+        setStatus(`${hits.length} result${hits.length === 1 ? '' : 's'} • ${sourceLabel}`);
+
+        if (!options.useCacheOnly && storage) {
+          const payload = {
+            timestamp: Date.now(),
+            query,
+            filter: currentFilter,
+            results: hits.slice(0, 10),
+            source: sourceLabel,
+          };
+          try {
+            storage.setItem(CACHE_KEY, JSON.stringify(payload));
+          } catch (error) {
+            console.warn('Unable to store search cache', error);
+          }
+        }
       } catch (error) {
         console.error('Search error', error);
         const fallbackHits = searchLocal(input?.value ?? '', currentFilter);
@@ -339,21 +419,57 @@ const serializedPackages = JSON.stringify(packages).replace(/</g, '\\u003c');
       }
     });
 
+    const updateFilterButtons = () => {
+      filterButtons.forEach((btn) => {
+        const isActive = btn.dataset.searchFilter === currentFilter;
+        btn.classList.toggle('btn-primary', isActive);
+        btn.classList.toggle('btn-outline', !isActive);
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    };
+
     filterButtons.forEach((button) => {
       button.addEventListener('click', () => {
         const filterId = button.dataset.searchFilter;
         currentFilter = currentFilter === filterId ? null : filterId;
-        filterButtons.forEach((btn) => {
-          const isActive = btn.dataset.searchFilter === currentFilter;
-          btn.classList.toggle('btn-primary', isActive);
-          btn.classList.toggle('btn-outline', !isActive);
-          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        });
+        updateFilterButtons();
+        renderFilterCrumb();
         executeSearch();
       });
     });
 
-    // Initial render
-    renderResults(fallbackRecords.slice(0, 5));
+    const hydrateFromCache = () => {
+      if (!storage) {
+        return false;
+      }
+      try {
+        const raw = storage.getItem(CACHE_KEY);
+        if (!raw) {
+          return false;
+        }
+        const cached = JSON.parse(raw);
+        if (!cached || Date.now() - cached.timestamp > CACHE_TTL) {
+          storage.removeItem(CACHE_KEY);
+          return false;
+        }
+
+        if (typeof cached.query === 'string' && input) {
+          input.value = cached.query;
+        }
+        currentFilter = cached.filter ?? null;
+        updateFilterButtons();
+        renderFilterCrumb();
+        renderResults(Array.isArray(cached.results) ? cached.results : []);
+        setStatus(`${cached.results?.length ?? 0} result(s) • Cached local results`);
+        return true;
+      } catch (error) {
+        console.warn('Unable to hydrate search cache', error);
+        return false;
+      }
+    };
+
+    if (!hydrateFromCache()) {
+      renderResults(fallbackRecords.slice(0, 5));
+    }
   })();
 </script>
