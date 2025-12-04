@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageIntro from '../components/PageIntro.astro';
+---
+<BaseLayout title="Info · CobolDepot" description="Governance, submissions, and CLI references">
+  <section class="space-y-10">
+    <PageIntro
+      eyebrow="Governance"
+      title="Open-source first, contributor friendly"
+      description="CobolDepot is a community registry. Every package must be open source, backed by a public Git repo, and submitted through a pull request with a YAML manifest."
+      annotation="We keep review SLAs tight: 24h for security patches, 72h for new packages."
+    />
+
+    <div class="glass-panel p-6 space-y-4">
+      <h2 class="text-2xl font-semibold">Submission contract</h2>
+      <ol class="list-decimal list-inside space-y-2 text-base-content/80">
+        <li>Fork the repo and add a `registry/<package>.yaml` entry using the template below.</li>
+        <li>Run <code>npm run validate:registry</code> locally to ensure schema compliance.</li>
+        <li>Open a pull request linking to your package repository and tests.</li>
+      </ol>
+      <pre class="bg-base-200 rounded-2xl p-4 text-sm overflow-x-auto">
+name: awesome-cobol
+version: 1.2.3
+description: Short elevator pitch.
+author: github-handle
+repository: https://github.com/org/awesome-cobol
+keywords:
+  - cobol
+  - toolkit
+license: MIT
+updatedAt: 2025-01-01
+      </pre>
+    </div>
+
+    <div class="glass-panel p-6 space-y-4">
+      <h2 class="text-2xl font-semibold">CLI quickref</h2>
+      <p class="text-base-content/80">
+        Install dependencies then use the bundled CLI to inspect or install packages directly from their Git repositories.
+      </p>
+      <pre class="bg-base-200 rounded-2xl p-4 text-sm overflow-x-auto">
+npm install
+npm run cli list
+npm run cli info green-screen-toolkit
+npm run cli install job-scheduler-bridge
+      </pre>
+      <p class="text-sm text-base-content/70">
+        Installs live under <code>.coboldepot/packages/</code> and include a <code>coboldepot.json</code> file with the repo key.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

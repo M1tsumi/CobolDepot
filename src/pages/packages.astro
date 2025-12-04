@@ -1,23 +1,63 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PackageCard from '../components/PackageCard.astro';
+import PageIntro from '../components/PageIntro.astro';
 import { packages } from '../data/packages';
+
+const tags = Array.from(new Set(packages.flatMap((pkg) => pkg.keywords))).sort((a, b) =>
+  a.localeCompare(b),
+);
 ---
 <BaseLayout title="Packages · CobolDepot" description="Browse curated COBOL packages">
-  <section class="space-y-8">
-    <header class="space-y-3">
-      <p class="text-sm uppercase tracking-[0.2em] text-primary">Packages Index</p>
-      <h1 class="text-4xl font-bold">Alphabetized COBOL package directory</h1>
-      <p class="text-lg text-base-content/80 max-w-3xl">
-        Every package entry ships with metadata ready for search and documentation. Submit a pull request with a YAML
-        manifest to have your library featured.
-      </p>
-    </header>
+  <section class="space-y-8" data-package-grid>
+    <PageIntro
+      eyebrow="Registry"
+      title="Alphabetized COBOL package directory"
+      description="Every manifest is human-reviewed to ensure open-source compliance and clean metadata. Filter by keyword to find your next dependency."
+    />
 
-    <div class="grid gap-6 md:grid-cols-2">
+    {tags.length > 0 && (
+      <div class="flex flex-wrap gap-3" data-tag-filter>
+        <button class="chip" type="button" data-tag="all" aria-pressed="true">All tags</button>
+        {tags.map((tag) => (
+          <button class="chip" type="button" data-tag={tag} aria-pressed="false">
+            {tag}
+          </button>
+        ))}
+      </div>
+    )}
+
+    <div class="grid gap-6 md:grid-cols-2" data-cards>
       {packages.map((pkg) => (
-        <PackageCard pkg={pkg} />
+        <div data-keywords={pkg.keywords.join(',')}>
+          <PackageCard pkg={pkg} />
+        </div>
       ))}
     </div>
   </section>
 </BaseLayout>
+
+<script type="module">
+  const grid = document.querySelector('[data-package-grid]');
+  if (grid) {
+    const buttons = Array.from(grid.querySelectorAll('[data-tag-filter] button'));
+    const cards = Array.from(grid.querySelectorAll('[data-cards] [data-keywords]'));
+    let activeTag = 'all';
+
+    const applyFilter = () => {
+      cards.forEach((card) => {
+        const keywords = card.dataset.keywords?.toLowerCase().split(',').map((k) => k.trim()) ?? [];
+        const shouldShow = activeTag === 'all' || keywords.includes(activeTag);
+        card.classList.toggle('hidden', !shouldShow);
+      });
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeTag = button.dataset.tag ?? 'all';
+        buttons.forEach((btn) => btn.setAttribute('aria-pressed', btn === button ? 'true' : 'false'));
+        applyFilter();
+      });
+    });
+  }
+</script>

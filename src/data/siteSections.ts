@@ -36,6 +36,11 @@ const sections: SiteSection[] = [
     href: '/guides',
   },
   {
+    name: 'Info',
+    description: 'Governance notes, open-source requirements, and CobolDepot CLI references.',
+    href: '/info',
+  },
+  {
     name: 'Home',
     description: 'Hero entrypoint with search, featured packages, and quick start actions.',
     href: '/',
@@ -44,6 +49,11 @@ const sections: SiteSection[] = [
     name: 'Packages Index',
     description: 'Alphabetized, filterable directory of COBOL packages with metadata cards.',
     href: '/packages',
+  },
+  {
+    name: 'Privacy',
+    description: 'How we treat telemetry, community submissions, and support data.',
+    href: '/privacy',
   },
   {
     name: 'Search',
