@@ -1,0 +1,7 @@
+{
+  "name": "coboldepot",            // set to your Worker’s name
+  "compatibility_date": "2025-12-04",
+  "assets": {
+    "directory": "./dist"
+  }
+}
