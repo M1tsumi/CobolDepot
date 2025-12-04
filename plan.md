@@ -53,6 +53,7 @@ To add a package, open a pull request following this format.
 - **Federated Results**: Return mixed package + doc hits with clear labels for context.
 - **Keyboard Shortcuts**: Support `/` to focus search and arrow navigation through results.
 - **Relevance Signals**: Rank by popularity, recent updates, and exact name matches.
+- **Relevance Signals**: Rank by recent updates, exact name matches, and documentation hits.
 - **Synonym Sets**: Map COBOL jargon (e.g., "copybook" vs "module") for better discoverability.
 - **Algolia Env Vars**: Configure `PUBLIC_ALGOLIA_APP_ID`, `PUBLIC_ALGOLIA_SEARCH_KEY`, and `PUBLIC_ALGOLIA_INDEX_NAME` as Cloudflare Pages environment variables so the Astro build can hydrate the search UI. Missing values should keep the site in local-only demo mode.
 

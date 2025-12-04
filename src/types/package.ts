@@ -7,5 +7,4 @@ export type PackageRecord = {
   keywords: string[];
   license: string;
   updatedAt: string;
-  popularity: number;
 };

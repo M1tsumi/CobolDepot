@@ -1,0 +1,22 @@
+---
+const {
+  eyebrow = '',
+  title,
+  description,
+  annotation,
+} = Astro.props as {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  annotation?: string;
+};
+---
+<section class="page-intro">
+  {eyebrow && <span class="chip text-primary/80">{eyebrow}</span>}
+  <div>
+    <h1>{title}</h1>
+    {description && <p>{description}</p>}
+  </div>
+  {annotation && <p class="text-sm text-base-content/60">{annotation}</p>}
+  <slot />
+</section>

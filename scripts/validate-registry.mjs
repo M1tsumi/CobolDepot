@@ -14,7 +14,6 @@ const requiredFields = [
   'keywords',
   'license',
   'updatedAt',
-  'popularity',
 ];
 
 const stringFields = new Set([
@@ -28,6 +27,19 @@ const stringFields = new Set([
 ]);
 
 const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-.]+)?(?:\+[0-9A-Za-z-.]+)?$/;
+const allowedLicenses = new Set([
+  'mit',
+  'apache-2.0',
+  'bsd-2-clause',
+  'bsd-3-clause',
+  'gpl-2.0',
+  'gpl-3.0',
+  'lgpl-2.1',
+  'lgpl-3.0',
+  'mpl-2.0',
+  'epl-2.0',
+  'cc0-1.0',
+]);
 
 const formatRelative = (absolutePath) => path.relative(process.cwd(), absolutePath);
 
@@ -75,9 +87,14 @@ const validateManifest = (manifest, source) => {
     hasErrors = true;
   }
 
-  if (typeof manifest.popularity !== 'number' || Number.isNaN(manifest.popularity)) {
-    fail(`✖ Field "popularity" must be a number in ${source}`);
-    hasErrors = true;
+  if (typeof manifest.license === 'string') {
+    const normalized = manifest.license.trim().toLowerCase();
+    if (!allowedLicenses.has(normalized)) {
+      fail(
+        `✖ Field "license" must be an approved open-source license (${Array.from(allowedLicenses).join(', ')}) in ${source}`,
+      );
+      hasErrors = true;
+    }
   }
 
   return hasErrors;

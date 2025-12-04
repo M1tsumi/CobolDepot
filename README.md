@@ -45,7 +45,7 @@ ALGOLIA_APP_ID="app" ALGOLIA_ADMIN_KEY="secret" ALGOLIA_INDEX_NAME="coboldepot" 
 The script performs the following steps:
 
 1. Runs `npm run validate:registry` to ensure manifests are well-formed.
-2. Converts each `registry/*.yaml` entry into Algolia objects (with `objectID`, `popularity`, timestamps, etc.).
+2. Converts each `registry/*.yaml` entry into Algolia objects (with `objectID`, timestamps, etc.).
 3. Calls the Algolia Batch API with `replaceObject` actions in chunks of 1,000.
 
 CI usage recommendation:

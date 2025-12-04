@@ -34,7 +34,7 @@ const {
       <div class="glow-ring bottom-[-60px] right-[-20px]"></div>
 
       <header class="px-6 pt-6">
-        <div class="max-w-6xl mx-auto flex flex-wrap items-center gap-4 glass-panel px-6 py-4">
+        <div class="content-shell flex flex-wrap items-center gap-4 glass-panel px-6 py-4">
           <a href="/" class="text-2xl font-bold text-primary tracking-tight">CobolDepot</a>
           <nav class="flex-1">
             <ul class="flex flex-wrap justify-center md:justify-start gap-3 text-sm font-medium">
@@ -58,13 +58,13 @@ const {
       </header>
 
       <main class="px-6 py-12">
-        <div class="max-w-6xl mx-auto">
+        <div class="content-shell">
           <slot />
         </div>
       </main>
 
       <footer class="px-6 pb-10">
-        <div class="max-w-6xl mx-auto glass-panel px-6 py-6 text-sm text-base-content/80 space-y-2">
+        <div class="content-shell glass-panel px-6 py-6 text-sm text-base-content/80 space-y-2">
           <p>&copy; {new Date().getFullYear()} CobolDepot. Built for mainframe teams.</p>
           <p>
             Cloudflare Pages deploys from <code>main</code>. Preview builds validate Docs, Packages, and Search updates

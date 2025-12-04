@@ -41,7 +41,6 @@ const serializedPackages = JSON.stringify(packages).replace(/</g, '\\u003c');
     </label>
   </div>
   <div class="flex gap-3 flex-wrap">
-    <button class="btn btn-xs btn-outline" type="button" data-search-filter="popular" aria-pressed="false">Popular</button>
     <button class="btn btn-xs btn-outline" type="button" data-search-filter="recent" aria-pressed="false">
       Recently updated
     </button>
@@ -124,13 +123,6 @@ const serializedPackages = JSON.stringify(packages).replace(/</g, '\\u003c');
     const buildRecentThreshold = () => Date.now() - RECENT_WINDOW_MS;
 
     const filterConfigs = {
-      popular: {
-        numericFilters: ['popularity>=80'],
-        localFilter: (records) =>
-          records
-            .filter((record) => typeof record.popularity === 'number' && record.popularity >= 80)
-            .sort((a, b) => b.popularity - a.popularity),
-      },
       recent: {
         numericFilters: () => [`updatedTimestamp>=${buildRecentThreshold()}`],
         localFilter: (records) =>
@@ -151,7 +143,6 @@ const serializedPackages = JSON.stringify(packages).replace(/</g, '\\u003c');
     };
 
     const filterLabels = {
-      popular: 'Popular',
       recent: 'Recently updated',
       'license-mit': 'MIT License',
       'license-apache': 'Apache License',

@@ -23,7 +23,6 @@ const parsePackage = (raw: string, source: string): PackageRecord => {
     'keywords',
     'license',
     'updatedAt',
-    'popularity',
   ];
 
   for (const field of requiredFields) {

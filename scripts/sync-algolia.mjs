@@ -14,7 +14,6 @@ const requiredFields = [
   'keywords',
   'license',
   'updatedAt',
-  'popularity',
 ];
 
 const stringFields = new Set([
@@ -89,9 +88,6 @@ const validateManifest = (manifest, source) => {
     throw new Error(`Field "version" must be a valid semver string in ${source}`);
   }
 
-  if (typeof manifest.popularity !== 'number' || Number.isNaN(manifest.popularity)) {
-    throw new Error(`Field "popularity" must be a number in ${source}`);
-  }
 };
 
 const normalizeRecords = (manifests) =>
